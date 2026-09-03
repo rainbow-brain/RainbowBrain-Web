@@ -1,0 +1,188 @@
+/* Hallmark · design-system: DESIGN.md · role: tokens */
+/* ============================================================================
+   tokens.css — DESIGN.md 서두를 1:1로 옮긴 파일.
+   hex/px 원시 값을 적을 수 있는 곳은 여기뿐이다.
+   나머지 스타일시트는 이 변수들만 사용한다.
+   ========================================================================== */
+
+:root {
+  /* ---- 색상: 브랜드 강조색 ----------------------------------------------
+     남색이 메인, 어두운 보라가 보조. 쨍한 파랑/보라는 시스템에 없다.
+       primary   #001c88  흰 배경 13.80:1 · 네이비 배경 1.28:1
+       secondary #53009c  흰 배경 11.36:1 · 네이비 배경 1.56:1
+     primary가 surface-dark와 1.28:1 밖에 차이나지 않으므로, 네이비 밴드
+     위에서 남색 채움은 보이지 않는다 → 그곳에서는 흰색으로 반전한다.   */
+  --color-primary: #001c88;
+  --color-primary-active: #001257;
+  --color-primary-on-dark: #7ca5ff;
+  /* primary를 흰색에 8% 섞은 값. 호버 배경·연한 패널·차분한 테두리에 사용. */
+  --color-primary-soft: #eaecf5;
+  --color-secondary: #53009c;
+  --color-secondary-active: #360066;
+  --color-secondary-on-dark: #cbb8ff;
+  --color-on-primary: #ffffff;
+
+  /* 브랜드 그라데이션 — 삭제한 프로모 스트립에서 가져와 히어로의 시그니처
+     배경으로 사용한다. */
+  --gradient-brand: linear-gradient(115deg,
+      var(--color-surface-dark) 0%,
+      color-mix(in srgb, var(--color-secondary) 34%, var(--color-surface-dark)) 58%,
+      color-mix(in srgb, var(--color-primary) 62%, var(--color-surface-dark)) 100%);
+
+  /* ---- 색상: 배경면 ----------------------------------------------------- */
+  --color-canvas: #ffffff;
+  --color-canvas-soft: #f0f0f0;
+  --color-surface: #ffffff;
+  --color-surface-dark: #001543;
+  --color-hairline: #e0e0e0;
+  /* 네이비 배경용 구분선. on-primary를 12% 투명도로 쓴 값. */
+  --color-hairline-on-dark: rgba(255, 255, 255, 0.12);
+
+  /* ---- 색상: 텍스트 ----------------------------------------------------- */
+  --color-ink: #000000;
+  --color-ink-secondary: #333333;
+  --color-ink-muted: #7a7a7a;
+  --color-body-muted: #cccccc;
+
+  /* ---- 색상: 의미색 -----------------------------------------------------
+     주의: `-dark`는 밝은 배경에서 쓰는 더 어두운 색이다.
+     위의 `-on-dark`(어두운 배경용 밝은 색)와 정반대이니 혼동 금지.  */
+  --color-success: #21c800; /* 배경 전용 — 흰 배경 대비 2.25:1      */
+  --color-success-dark: #158000; /* 밝은 배경의 글자/아이콘/테두리 5.10:1 */
+  --color-error: #dd0000; /* 흰 배경 글자 5.15:1 또는 배경용       */
+  --color-error-dark: #a60000; /* 위험 버튼 눌림 / 회색 위 오류         */
+  --color-warning: #ffa600; /* 배경 전용 — 흰 배경 대비 1.96:1      */
+
+  /* ---- 타이포그래피 ----------------------------------------------------- */
+  --font-sans:
+    "Pretendard Variable", Pretendard, -apple-system, BlinkMacSystemFont,
+    system-ui, "Apple SD Gothic Neo", "Malgun Gothic", sans-serif;
+
+  --fs-display-1: 64px;
+  --lh-display-1: 1.2;
+  --ls-display-1: -0.02em;
+  --fw-display-1: 800;
+  --fs-display-2: 54px;
+  --lh-display-2: 1.2;
+  --ls-display-2: -0.02em;
+  --fw-display-2: 800;
+  --fs-heading-1: 40px;
+  --lh-heading-1: 1.25;
+  --ls-heading-1: -0.02em;
+  --fw-heading-1: 800;
+  --fs-stat: 40px;
+  --lh-stat: 1.15;
+  --ls-stat: -0.01em;
+  --fw-stat: 700;
+  --fs-heading-2: 26px;
+  --lh-heading-2: 1.35;
+  --ls-heading-2: -0.02em;
+  --fw-heading-2: 700;
+  --fs-heading-3: 22px;
+  --lh-heading-3: 1.4;
+  --ls-heading-3: -0.015em;
+  --fw-heading-3: 700;
+  --fs-title: 20px;
+  --lh-title: 1.45;
+  --ls-title: -0.01em;
+  --fw-title: 600;
+  --fs-body-md: 16px;
+  --lh-body-md: 1.6;
+  --ls-body-md: 0;
+  --fw-body-md: 400;
+  --fs-body-sm: 15px;
+  --lh-body-sm: 1.5;
+  --ls-body-sm: 0;
+  --fw-body-sm: 400;
+  --fs-button: 16px;
+  --lh-button: 1.5;
+  --ls-button: 0;
+  --fw-button: 500;
+  --fs-caption: 14px;
+  --lh-caption: 1.5;
+  --ls-caption: 0;
+  --fw-caption: 400;
+  --fs-eyebrow: 12px;
+  --lh-eyebrow: 1.4;
+  --ls-eyebrow: 0.01em;
+  --fw-eyebrow: 600;
+
+  /* ---- 모서리 반경 ------------------------------------------------------ */
+  --radius-xs: 4px;
+  --radius-sm: 5px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-xl: 16px;
+  --radius-full: 9999px;
+
+  /* ---- 간격 ------------------------------------------------------------- */
+  --space-xxs: 4px;
+  --space-xs: 8px;
+  --space-sm: 12px;
+  --space-md: 16px;
+  --space-lg: 24px;
+  --space-xl: 28px;
+  --space-xxl: 32px;
+
+  /* ---- 레이아웃 --------------------------------------------------------- */
+  --container-max: 1280px;
+  --container-gutter: 24px;
+  --section-py: 96px;
+  --section-py-compact: 64px;
+  --grid-gap: 24px;
+  --banner-hero-height: 420px;
+  /* 헤더는 현재 rbrain.co.kr 바보다 의도적으로 얇게 잡았다. */
+  --header-height: 60px;
+
+  /* ---- 그림자 (DESIGN.md > Elevation & Depth) ---------------------------- */
+  --shadow-1:
+    rgba(0, 0, 0, 0.01) 0 0.175px 1.041px, rgba(0, 0, 0, 0.02) 0 0.8px 2.925px,
+    rgba(0, 0, 0, 0.027) 0 2.025px 7.847px, rgba(0, 0, 0, 0.04) 0 4px 18px;
+  --shadow-2:
+    rgba(0, 0, 0, 0.02) 0 1px 3px, rgba(0, 0, 0, 0.03) 0 4px 10px,
+    rgba(0, 0, 0, 0.04) 0 10px 24px, rgba(0, 0, 0, 0.05) 0 23px 52px;
+
+  /* ---- 모션 -------------------------------------------------------------
+     fast/base는 조작에 대한 반응이다(호버 · 버튼 · 메뉴 열림). 여기를 늘리면
+     클릭이 굼떠 보이므로 건드리지 않는다.
+     slow는 스크롤 등장·이미지 확대처럼 "지켜보는" 모션이다. 720 -> 1100ms로
+     늘려 요소가 천천히 올라오게 했다. 페이지 전체의 체감 속도는 이 값 하나가
+     정한다 — 되돌리려면 720ms로만 낮추면 된다.                           */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --dur-fast: 160ms;
+  --dur-base: 260ms;
+  --dur-slow: 1100ms;
+
+  --z-header: 100;
+  --z-rail: 90;
+  --z-drawer: 200;
+}
+
+/* 반응형 축소값. 크기만 줄이고 굵기 단계는 그대로 유지한다. */
+@media (max-width: 1024px) {
+  :root {
+    --fs-display-1: 44px;
+    --fs-display-2: 38px;
+    --fs-heading-1: 30px;
+    --fs-stat: 32px;
+    --fs-heading-2: 22px;
+    --section-py: 72px;
+    --section-py-compact: 48px;
+    --banner-hero-height: 360px;
+  }
+}
+
+@media (max-width: 600px) {
+  :root {
+    --fs-display-1: 32px;
+    --fs-display-2: 28px;
+    --fs-heading-1: 24px;
+    --fs-stat: 28px;
+    --fs-heading-2: 20px;
+    --fs-heading-3: 18px;
+    --container-gutter: 16px;
+    --section-py: 56px;
+    --section-py-compact: 40px;
+    --header-height: 56px;
+  }
+}

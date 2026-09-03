@@ -1,0 +1,962 @@
+/* Hallmark · design-system: DESIGN.md · role: theme */
+/* ============================================================================
+   pages.css — 하위 페이지(회사소개 · 서비스 · 솔루션 · 구축사례) 전용 밴드.
+
+   theme-deep-field.css 다음에 로드한다. 테마의 언어(네이비 판 · 규칙선 ·
+   번호 · 큰 조판)를 그대로 쓰되, 홈에만 있던 스크롤 연동 장치는 없다.
+   기존 클래스(.band / .container / .t-* / .head-left / .btn)는 재사용한다.
+
+   ⚠ tokens.css 규칙 예외: 이 파일에만 필요한 원시값은 아래 :root에 모은다.
+   ========================================================================== */
+
+:root {
+  /* 하위 페이지 머리 밴드의 최소 높이. 홈의 히어로(820px)보다 한참 낮다 —
+     "무슨 페이지인지"만 말하고 본문에 자리를 넘기는 것이 목적이다. */
+  --page-hero-min-h: 400px;
+  --fs-page-title: clamp(30px, 4.2vw, 60px);
+  /* 하위 페이지 밴드 여백. 홈의 --theme-py(120px)와 같은 리듬을 쓴다. */
+  --page-py: 110px;
+}
+
+@media (max-width: 1024px) {
+  :root {
+    --page-hero-min-h: 320px;
+    --page-py: 72px;
+  }
+}
+@media (max-width: 600px) {
+  :root {
+    --page-hero-min-h: 280px;
+    --page-py: 56px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   1. page-hero — 모든 하위 페이지의 머리 밴드
+   ══════════════════════════════════════════════════════════════════════════ */
+.page-hero {
+  /* 홈 히어로의 격자 결을 옅게 재현한다. 같은 계열이라는 신호만 주고,
+     본문을 방해할 만큼 드러나지는 않는 농도다. */
+  background:
+    linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-secondary) 12%, var(--color-surface-dark)) 0%,
+      var(--color-surface-dark) 70%
+    );
+  overflow: hidden;
+}
+.page-hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--spine-grid, rgba(255, 255, 255, 0.045)) 1px, transparent 1px),
+    linear-gradient(90deg, var(--spine-grid, rgba(255, 255, 255, 0.045)) 1px, transparent 1px);
+  background-size: 80px 80px;
+  pointer-events: none;
+}
+.page-hero__inner {
+  position: relative;
+  min-height: var(--page-hero-min-h);
+  padding-block: 64px 56px;
+  display: grid;
+  align-content: center;
+  gap: 40px;
+}
+
+/* ---- 브레드크럼 ---------------------------------------------------------- */
+.page-hero__crumbs {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: var(--fs-caption);
+  color: var(--color-body-muted);
+}
+.page-hero__crumb {
+  transition: color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  a.page-hero__crumb:hover {
+    color: var(--color-on-primary);
+    text-decoration: underline;
+  }
+}
+.page-hero__crumb.is-current {
+  color: var(--color-on-primary);
+  font-weight: 600;
+}
+.page-hero__crumb-sep {
+  color: var(--hairline-dim, rgba(255, 255, 255, 0.35));
+}
+
+/* ---- 제목 | 설명 2단 -----------------------------------------------------
+   제목이 왼쪽에서 끝까지 커지고, 설명은 오른쪽 아래에 붙는다. 가운데
+   정렬하면 긴 한국어 제목이 두 줄로 갈릴 때 축이 흔들린다.               */
+.page-hero__body {
+  display: grid;
+  grid-template-columns: 1.35fr 1fr;
+  gap: 48px;
+  align-items: end;
+}
+.page-hero__eyebrow {
+  color: var(--color-primary-on-dark);
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  margin-bottom: 18px;
+}
+.page-hero__title {
+  font-size: var(--fs-page-title);
+  font-weight: 800;
+  line-height: 1.14;
+  letter-spacing: -0.035em;
+  text-wrap: balance;
+}
+.page-hero__lede {
+  color: var(--color-body-muted);
+  font-size: 17px;
+  line-height: 1.7;
+  max-width: 46ch;
+}
+.page-hero__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: var(--space-lg);
+}
+
+/* ---- 요약 수치 ----------------------------------------------------------- */
+.page-hero__stats {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 56px;
+  padding-top: 32px;
+  border-top: 1px solid var(--color-hairline-on-dark);
+}
+.page-hero__stat {
+  display: grid;
+  gap: 6px;
+}
+.page-hero__stat-value {
+  font-size: clamp(24px, 2.4vw, 34px);
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  font-variant-numeric: tabular-nums;
+}
+.page-hero__stat-label {
+  font-size: var(--fs-caption);
+  color: var(--ink-dim, rgba(255, 255, 255, 0.45));
+}
+
+/* ---- 페이지 안 이동 스트립 -----------------------------------------------
+   홈 히어로의 챕터 스트립과 같은 형태다. 세로선으로 나뉜 번호 + 이름.     */
+.page-hero__jumps {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  border-top: 1px solid var(--color-hairline-on-dark);
+}
+.page-hero__jump {
+  display: grid;
+  gap: 8px;
+  padding: 22px 24px 4px;
+  border-left: 1px solid var(--color-hairline-on-dark);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+.page-hero__jump:first-child {
+  border-left: 0;
+  padding-left: 0;
+}
+@media (hover: hover) {
+  .page-hero__jump:hover {
+    background: rgba(255, 255, 255, 0.05);
+  }
+  .page-hero__jump:hover .page-hero__jump-label {
+    color: var(--color-on-primary);
+  }
+}
+.page-hero__jump-no {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  color: var(--color-primary-on-dark);
+  font-variant-numeric: tabular-nums;
+}
+.page-hero__jump-label {
+  font-size: var(--fs-chapter, 15px);
+  font-weight: 600;
+  color: var(--color-body-muted);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+
+@media (max-width: 900px) {
+  .page-hero__body {
+    grid-template-columns: 1fr;
+    gap: 28px;
+    align-items: start;
+  }
+  .page-hero__stats {
+    gap: 32px;
+  }
+  .page-hero__jumps {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+  .page-hero__jump,
+  .page-hero__jump:first-child {
+    padding: 18px 16px 4px;
+    border-left: 1px solid var(--color-hairline-on-dark);
+  }
+  .page-hero__jump:nth-child(2n + 1) {
+    border-left: 0;
+    padding-left: 0;
+  }
+}
+@media (max-width: 600px) {
+  .page-hero__inner {
+    padding-block: 40px;
+    gap: 28px;
+  }
+  .page-hero__stats {
+    gap: 24px 32px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   2. mission — 회사소개 미션 밴드
+   ══════════════════════════════════════════════════════════════════════════ */
+.mission.band--pad {
+  padding-block: var(--page-py);
+}
+.mission__inner {
+  display: grid;
+  grid-template-columns: 1.15fr 1fr;
+  gap: 72px;
+  align-items: start;
+}
+.mission__title {
+  font-size: clamp(26px, 3.1vw, 44px);
+  font-weight: 800;
+  line-height: 1.2;
+  letter-spacing: -0.035em;
+  margin-block: 14px 28px;
+  text-wrap: pretty;
+}
+.mission__paras {
+  display: grid;
+  gap: var(--space-md);
+}
+.mission__para {
+  color: var(--color-ink-secondary);
+  font-size: 17px;
+  line-height: 1.8;
+}
+.mission__media .media {
+  border-radius: var(--radius-xl);
+}
+
+/* 사실 네 칸. 수치가 라벨보다 먼저 읽히도록 순서를 뒤집어 놓았다. */
+.mission__points {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 32px;
+  margin-top: 72px;
+  padding-top: 40px;
+  border-top: 2px solid var(--color-ink);
+}
+.mission__point {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+}
+.mission__point-value {
+  font-size: clamp(28px, 2.9vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.1;
+  font-variant-numeric: tabular-nums;
+}
+.mission__point-label {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+}
+.mission__point-note {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-muted);
+}
+
+@media (max-width: 1024px) {
+  .mission__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+  .mission__points {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    margin-top: 48px;
+  }
+}
+@media (max-width: 600px) {
+  .mission__points {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   3. history — 연혁 (네이비 밴드)
+   ══════════════════════════════════════════════════════════════════════════ */
+.history.band--pad {
+  padding-block: var(--page-py);
+}
+.history__groups {
+  display: grid;
+}
+.history__group {
+  display: grid;
+  grid-template-columns: 220px 1fr;
+  gap: 48px;
+  padding-block: 40px;
+  border-top: 1px solid var(--color-hairline-on-dark);
+}
+.history__group:last-child {
+  border-bottom: 1px solid var(--color-hairline-on-dark);
+}
+.history__year {
+  display: grid;
+  gap: 6px;
+  align-content: start;
+  /* 항목이 많은 연도에서도 연도가 화면에 남아 있게 한다. 헤더 높이만큼
+     아래로 물린다. */
+  position: sticky;
+  top: calc(var(--header-height) + 24px);
+}
+.history__year-value {
+  font-size: clamp(30px, 3vw, 42px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+.history__year-note {
+  font-size: var(--fs-caption);
+  color: var(--color-primary-on-dark);
+  font-weight: 600;
+}
+.history__entries {
+  display: grid;
+  gap: 20px;
+}
+.history__entry {
+  display: grid;
+  grid-template-columns: 48px 1fr;
+  gap: var(--space-md);
+  align-items: baseline;
+}
+.history__month {
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  color: var(--ink-dim, rgba(255, 255, 255, 0.45));
+  font-variant-numeric: tabular-nums;
+}
+.history__entry-body {
+  display: grid;
+  gap: 6px;
+}
+.history__entry-title {
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+.history__entry-desc {
+  font-size: var(--fs-body-sm);
+  color: var(--color-body-muted);
+  line-height: 1.65;
+}
+
+@media (max-width: 900px) {
+  .history__group {
+    grid-template-columns: 1fr;
+    gap: 24px;
+  }
+  .history__year {
+    position: static;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   4. location — 오시는 길
+   ══════════════════════════════════════════════════════════════════════════ */
+.location.band--pad {
+  padding-block: var(--page-py);
+}
+.location__inner {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 64px;
+  align-items: start;
+}
+.location__name {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+  color: var(--color-primary);
+  margin-bottom: 10px;
+}
+.location__address {
+  font-size: clamp(20px, 1.9vw, 26px);
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+.location__address-sub {
+  margin-top: 8px;
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-muted);
+}
+.location__contacts {
+  display: grid;
+  gap: 0;
+  margin-top: 36px;
+  border-top: 1px solid var(--color-hairline);
+}
+.location__contact {
+  display: grid;
+  grid-template-columns: 110px 1fr;
+  gap: var(--space-md);
+  padding-block: 14px;
+  border-bottom: 1px solid var(--color-hairline);
+}
+.location__contact-label {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-muted);
+}
+.location__contact-value {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+}
+.location__contact-value a {
+  color: var(--color-primary);
+}
+@media (hover: hover) {
+  .location__contact-value a:hover {
+    text-decoration: underline;
+  }
+}
+.location__transits {
+  display: grid;
+  gap: 12px;
+  margin-top: 32px;
+}
+.location__transit {
+  display: grid;
+  grid-template-columns: 64px 1fr;
+  gap: var(--space-md);
+  align-items: baseline;
+}
+.location__transit-label {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: var(--color-on-primary);
+  background: var(--color-primary);
+  border-radius: var(--radius-xs);
+  padding: 3px 8px;
+  text-align: center;
+}
+.location__transit-desc {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-secondary);
+  line-height: 1.6;
+}
+.location__maplink {
+  margin-top: 28px;
+}
+.location__map {
+  border-radius: var(--radius-xl);
+}
+.location__map > iframe {
+  width: 100%;
+  height: 100%;
+  border: 0;
+  display: block;
+}
+
+@media (max-width: 1024px) {
+  .location__inner {
+    grid-template-columns: 1fr;
+    gap: 40px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   5. services — 서비스 목록
+   ══════════════════════════════════════════════════════════════════════════ */
+.services.band--pad {
+  padding-block: var(--page-py);
+}
+.services__rows {
+  display: grid;
+}
+.service {
+  display: grid;
+  grid-template-columns: 1fr 1.1fr;
+  gap: 56px;
+  padding-block: 48px;
+  border-top: 1px solid var(--color-hairline);
+  /* 헤더 고정 높이만큼 앵커 위치를 보정한다. `?to=`로 들어와도 제목이
+     바 뒤로 숨지 않는다. */
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+.service:last-child {
+  border-bottom: 1px solid var(--color-hairline);
+}
+.service__head {
+  display: grid;
+  grid-template-columns: 56px 1fr;
+  gap: var(--space-md);
+  align-content: start;
+  position: sticky;
+  top: calc(var(--header-height) + 24px);
+}
+.service__no {
+  font-size: 15px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+  padding-top: 6px;
+}
+.service__titles {
+  display: grid;
+  gap: 10px;
+}
+.service__code {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-ink-muted);
+}
+.service__title {
+  font-size: clamp(22px, 2.2vw, 30px);
+  font-weight: 800;
+  letter-spacing: -0.03em;
+  line-height: 1.25;
+}
+.service__summary {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-secondary);
+  line-height: 1.65;
+}
+.service__detail {
+  display: grid;
+  gap: var(--space-lg);
+  align-content: start;
+}
+.service__desc {
+  font-size: var(--fs-body-md);
+  color: var(--color-ink-secondary);
+  line-height: 1.8;
+}
+.service__deliverables {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 10px 24px;
+}
+.service__deliverable {
+  position: relative;
+  padding-left: 18px;
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+}
+.service__deliverable::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 9px;
+  width: 6px;
+  height: 6px;
+  border-radius: var(--radius-full);
+  background: var(--color-primary);
+}
+.service__outcomes {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 32px;
+  padding: 20px 24px;
+  border-radius: var(--radius-lg);
+  background: var(--color-primary-soft);
+}
+.service__outcome {
+  display: grid;
+  gap: 2px;
+}
+.service__outcome-value {
+  font-size: 26px;
+  font-weight: 800;
+  letter-spacing: -0.02em;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+.service__outcome-caption {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-secondary);
+}
+.service__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+}
+.service__tag {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-secondary);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-full);
+  padding: 4px 12px;
+}
+
+@media (max-width: 1024px) {
+  .service {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .service__head {
+    position: static;
+  }
+}
+@media (max-width: 600px) {
+  .service__deliverables {
+    grid-template-columns: 1fr;
+  }
+  .service__outcomes {
+    gap: 20px;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   6. process — 진행 단계
+   ══════════════════════════════════════════════════════════════════════════ */
+.process.band--pad {
+  padding-block: var(--page-py);
+}
+.process__grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 0;
+}
+.process__step {
+  display: grid;
+  gap: 10px;
+  align-content: start;
+  padding: 28px 24px 0 24px;
+  border-top: 2px solid var(--color-ink);
+  position: relative;
+}
+/* 단계 사이의 연결선. 카드 테두리 대신 위쪽 규칙선 하나만 쓰기 때문에
+   순서는 이 선과 번호로 읽힌다. */
+.process__step + .process__step::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 28px;
+  bottom: 8px;
+  width: 1px;
+  background: var(--color-hairline);
+}
+.process__step:first-child {
+  padding-left: 0;
+}
+.process__no {
+  font-size: var(--fs-eyebrow);
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: var(--color-primary);
+  font-variant-numeric: tabular-nums;
+}
+.process__title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+}
+.process__desc {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-secondary);
+  line-height: 1.65;
+}
+.process__duration {
+  margin-top: 4px;
+  font-size: var(--fs-caption);
+  font-weight: 700;
+  color: var(--color-primary);
+}
+
+@media (max-width: 1024px) {
+  .process__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 32px 0;
+  }
+  .process__step:first-child {
+    padding-left: 24px;
+  }
+  .process__step:nth-child(2n + 1) {
+    padding-left: 0;
+  }
+  .process__step:nth-child(2n + 1)::after {
+    display: none;
+  }
+}
+@media (max-width: 600px) {
+  .process__grid {
+    grid-template-columns: 1fr;
+    gap: 28px;
+  }
+  .process__step,
+  .process__step:first-child {
+    padding-inline: 0;
+  }
+  .process__step + .process__step::after {
+    display: none;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   7. solutions — 제품 판 (좌우 교대)
+   ══════════════════════════════════════════════════════════════════════════ */
+.solutions.band--pad {
+  padding-block: var(--page-py);
+}
+.solutions__list {
+  display: grid;
+  gap: 96px;
+}
+.solution {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 64px;
+  align-items: center;
+  scroll-margin-top: calc(var(--header-height) + 16px);
+}
+.solution.is-lead {
+  grid-template-columns: 1fr 1.15fr;
+}
+/* 짝수 판은 좌우를 뒤집는다. DOM 순서는 그대로 두고 배치만 바꾸므로
+   읽기 순서(제품명 -> 설명 -> 이미지)는 유지된다. */
+.solution.is-flipped .solution__body {
+  order: 2;
+}
+.solution__eyebrow {
+  font-size: var(--fs-eyebrow);
+  font-weight: 700;
+  letter-spacing: 0.16em;
+  color: var(--color-primary);
+  margin-bottom: 14px;
+}
+.solution__name {
+  font-size: clamp(26px, 2.9vw, 40px);
+  font-weight: 800;
+  letter-spacing: -0.035em;
+  line-height: 1.15;
+}
+.solution__tagline {
+  margin-top: 12px;
+  font-size: clamp(17px, 1.5vw, 20px);
+  font-weight: 600;
+  color: var(--color-secondary);
+  letter-spacing: -0.015em;
+}
+.solution__desc {
+  margin-top: 18px;
+  font-size: var(--fs-body-md);
+  color: var(--color-ink-secondary);
+  line-height: 1.8;
+}
+.solution__badges {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  margin-top: 20px;
+}
+.solution__features {
+  display: grid;
+  gap: 1px;
+  margin-top: 28px;
+  background: var(--color-hairline);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  overflow: hidden;
+}
+.solution__feature {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: var(--space-sm);
+  padding: 14px 18px;
+  background: var(--color-surface);
+}
+.solution__feature-name {
+  font-size: var(--fs-body-sm);
+  font-weight: 700;
+}
+.solution__feature-note {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-muted);
+}
+.solution__specs {
+  display: grid;
+  margin-top: 24px;
+}
+.solution__spec {
+  display: grid;
+  grid-template-columns: 96px 1fr;
+  gap: var(--space-md);
+  padding-block: 12px;
+  border-bottom: 1px solid var(--color-hairline);
+}
+.solution__spec:first-child {
+  border-top: 1px solid var(--color-hairline);
+}
+.solution__spec-label {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-muted);
+}
+.solution__spec-value {
+  margin: 0;
+  font-size: var(--fs-body-sm);
+  font-weight: 500;
+}
+.solution__actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+  margin-top: 32px;
+}
+.solution__media .media {
+  border-radius: var(--radius-xl);
+}
+
+@media (max-width: 1024px) {
+  .solutions__list {
+    gap: 64px;
+  }
+  .solution,
+  .solution.is-lead {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+  /* 1열에서는 순서를 되돌린다. 뒤집힌 채로 두면 이미지가 제품명보다
+     먼저 나온다. */
+  .solution.is-flipped .solution__body {
+    order: 0;
+  }
+}
+
+/* ══════════════════════════════════════════════════════════════════════════
+   8. cases-grid — 구축사례 목록 + 산업 필터
+   ══════════════════════════════════════════════════════════════════════════ */
+.cases-grid.band--pad {
+  padding-block: var(--page-py);
+}
+.cases-grid__filters {
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-xs);
+  padding-bottom: 24px;
+  border-bottom: 1px solid var(--color-hairline);
+}
+.case-filter {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 40px;
+  padding: 6px 18px;
+  border-radius: var(--radius-full);
+  border: 1px solid var(--color-hairline);
+  font-size: var(--fs-body-sm);
+  font-weight: 600;
+  color: var(--color-ink-secondary);
+  transition:
+    background-color var(--dur-fast) var(--ease-out),
+    border-color var(--dur-fast) var(--ease-out),
+    color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) {
+  .case-filter:hover {
+    border-color: color-mix(in srgb, var(--color-primary) 55%, #ffffff);
+    color: var(--color-primary);
+    background: var(--color-primary-soft);
+  }
+}
+.case-filter.is-active {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+  color: var(--color-on-primary);
+}
+.case-filter__count {
+  font-size: var(--fs-caption);
+  font-weight: 500;
+  opacity: 0.7;
+  font-variant-numeric: tabular-nums;
+}
+.cases-grid__count {
+  margin-block: 20px 28px;
+}
+.cases-grid__grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 40px 32px;
+}
+.case-card {
+  display: grid;
+  gap: var(--space-md);
+  align-content: start;
+}
+.case-card__media {
+  border-radius: var(--radius-lg);
+}
+@media (hover: hover) {
+  .case-card:hover .case-card__media > img {
+    transform: scale(1.04);
+  }
+  .case-card:hover .case-card__title {
+    text-decoration: underline;
+    text-underline-offset: 3px;
+  }
+}
+.case-card__body {
+  display: grid;
+  gap: 10px;
+}
+.case-card__meta {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+}
+.case-card__date {
+  font-size: var(--fs-caption);
+  color: var(--color-ink-muted);
+  font-variant-numeric: tabular-nums;
+}
+.case-card__title {
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  line-height: 1.4;
+}
+.case-card__excerpt {
+  font-size: var(--fs-body-sm);
+  color: var(--color-ink-secondary);
+  line-height: 1.65;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+@media (max-width: 1024px) {
+  .cases-grid__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+@media (max-width: 600px) {
+  .cases-grid__grid {
+    grid-template-columns: 1fr;
+    gap: 32px;
+  }
+}

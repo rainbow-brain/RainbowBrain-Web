@@ -1,0 +1,570 @@
+/* Hallmark · design-system: DESIGN.md · role: components */
+/* ============================================================================
+   components.css — DESIGN.md > Components의 컴포넌트당 블록 하나.
+   클래스명은 토큰명과 맞춰, 명세 한 줄이 규칙 하나에 대응하도록 했다.
+   ========================================================================== */
+
+/* ==========================================================================
+   버튼 — 6가지 인터랙션 상태 전부 (DESIGN.md > Interaction States)
+   ========================================================================== */
+.btn {
+  --btn-bg: transparent;
+  --btn-fg: var(--color-ink);
+  --btn-bd: transparent;
+  display: inline-flex; align-items: center; justify-content: center; gap: var(--space-xs);
+  min-height: 44px;                        /* 터치 영역 최소 크기 */
+  padding: 10px 22px;
+  font-size: var(--fs-button); font-weight: var(--fw-button); line-height: var(--lh-button);
+  border-radius: var(--radius-full);
+  background: var(--btn-bg); color: var(--btn-fg);
+  border: 1px solid var(--btn-bd);
+  position: relative; isolation: isolate;
+  transition: background-color var(--dur-fast) var(--ease-out),
+              border-color var(--dur-fast) var(--ease-out),
+              transform var(--dur-fast) var(--ease-out);
+  white-space: nowrap;
+}
+/* 호버는 새 색을 쓰지 않고 원래 색의 명도만 바꾼다. */
+.btn::before {
+  content: ''; position: absolute; inset: 0; z-index: -1;
+  border-radius: inherit; background: rgba(0, 0, 0, 0.08);
+  opacity: 0; transition: opacity var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) { .btn:hover::before { opacity: 1; } }
+.btn:active { transform: scale(0.98); }
+.btn[disabled], .btn[aria-disabled="true"] {
+  background: var(--color-body-muted); color: var(--color-ink-muted);
+  border-color: var(--color-hairline); cursor: not-allowed; transform: none;
+}
+.btn[disabled]::before { opacity: 0; }
+
+/* 남색 채움 + 흰 글자. 밝은 배경에서만 사용한다. */
+.btn--primary   { --btn-bg: var(--color-primary); --btn-fg: var(--color-on-primary); }
+.btn--primary:active { background: var(--color-primary-active); }
+/* 흰 배경 + 남색 글자 + 연한 남색 테두리. 회색 테두리보다 정돈돼 보인다. */
+/* 테두리 농도 55%는 임의값이 아니다. 이 버튼은 채움이 흰색이라 테두리가
+   유일한 경계이므로 WCAG 1.4.11(비텍스트 3:1)을 테두리가 충족해야 한다.
+   흰 배경 3.71:1 / 회색 밴드 3.25:1. 26%였다면 1.73:1로 미달이었다. */
+.btn--secondary {
+  --btn-bg: var(--color-surface);
+  --btn-fg: var(--color-primary);
+  --btn-bd: color-mix(in srgb, var(--color-primary) 55%, #ffffff);
+  box-shadow: var(--shadow-1);
+}
+.btn--secondary::before { background: var(--color-primary-soft); }
+.btn--utility   { --btn-bg: var(--color-surface); --btn-fg: var(--color-primary);
+                  --btn-bd: color-mix(in srgb, var(--color-primary) 55%, #ffffff);
+                  border-radius: var(--radius-md); padding: 6px 14px; min-height: 36px; font-size: var(--fs-body-sm); }
+.btn--utility::before { background: var(--color-primary-soft); }
+.btn--danger    { --btn-bg: var(--color-error); --btn-fg: var(--color-on-primary); }
+.btn--danger:active { background: var(--color-error-dark); }
+/* 네이비 위에서는 흰 외곽선 버튼과 반전된 채움 버튼을 쓴다. */
+.btn--ghost-dark { --btn-bg: transparent; --btn-fg: var(--color-on-primary); --btn-bd: rgba(255,255,255,0.45); }
+.btn--ghost-dark::before { background: rgba(255, 255, 255, 0.14); }
+/* 다크 밴드 위의 주 버튼. primary는 surface-dark와 1.28:1 밖에 차이나지
+   않아 남색 채움이 사라지므로, 어두운 배경에서는 반드시 이쪽을 쓴다. */
+.btn--invert    { --btn-bg: var(--color-on-primary); --btn-fg: var(--color-primary); }
+.btn--invert::before { background: rgba(0, 0, 0, 0.06); }
+.btn--sm        { min-height: 36px; padding: 6px 16px; font-size: var(--fs-body-sm); }
+
+/* 호버 시 밑줄이 생기는 텍스트 링크. */
+.link-more {
+  display: inline-flex; align-items: center; gap: 6px;
+  color: var(--color-primary); font-size: var(--fs-body-sm); font-weight: 500;
+}
+.link-more::after { content: '→'; transition: transform var(--dur-fast) var(--ease-out); }
+@media (hover: hover) { .link-more:hover { text-decoration: underline; } .link-more:hover::after { transform: translateX(3px); } }
+.band--dark .link-more { color: var(--color-primary-on-dark); }
+
+/* ==========================================================================
+   chip-category — 버튼이 아니라 라벨. 사이트 전체에서 색은 최대 2가지.
+   ========================================================================== */
+.chip {
+  display: inline-block; padding: 3px 8px;
+  border-radius: var(--radius-xs);
+  background: var(--color-primary); color: var(--color-on-primary);
+  font-size: var(--fs-eyebrow); font-weight: var(--fw-eyebrow); letter-spacing: var(--ls-eyebrow);
+}
+.chip--alt { background: var(--color-secondary); }
+.chip--outline-dark { background: transparent; color: var(--color-secondary-on-dark); border: 1px solid var(--color-secondary-on-dark); }
+
+/* ==========================================================================
+   site-header — 현재 rbrain.co.kr 바보다 얇다 (60px / 56px).
+   배경은 전체 폭 네이비, 내용은 컨테이너 안, 반투명 없이 불투명.
+   ========================================================================== */
+.site-header {
+  position: sticky; top: 0; z-index: var(--z-header);
+  background: var(--color-surface-dark);
+  color: var(--color-on-primary);
+  border-bottom: 1px solid var(--color-hairline-on-dark);
+  transition: background-color var(--dur-base) var(--ease-out),
+              border-color var(--dur-base) var(--ease-out),
+              color var(--dur-base) var(--ease-out);
+}
+.site-header__inner {
+  height: var(--header-height);
+  display: flex; align-items: center; gap: var(--space-lg);
+}
+.site-header__logo { font-weight: 800; letter-spacing: -0.02em; font-size: 17px; flex-shrink: 0; }
+.site-header__nav { display: flex; gap: var(--space-lg); margin-inline: auto; }
+.site-header__link {
+  font-size: var(--fs-body-sm); color: var(--color-body-muted);
+  padding-block: 4px; position: relative;
+  transition: color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) { .site-header__link:hover { color: var(--color-on-primary); } }
+.site-header__link[aria-current="page"] { color: var(--color-primary-on-dark); font-weight: 600; }
+.site-header__actions { display: flex; align-items: center; gap: var(--space-xs); flex-shrink: 0; }
+.site-header__icon-btn {
+  width: 36px; height: 36px; display: grid; place-items: center;
+  border-radius: var(--radius-md); color: var(--color-on-primary);
+  transition: background-color var(--dur-fast) var(--ease-out),
+              color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) { .site-header__icon-btn:hover { background: rgba(255,255,255,0.12); } }
+.site-header__burger { display: none; }
+
+/* ---- 메가 메뉴 -------------------------------------------------------------
+   주 메뉴에 마우스를 올리면 바가 흰색으로 뒤집히고 아래로 패널이 열린다.
+   바와 패널이 같은 흰 면이라 한 덩어리로 읽힌다.                          */
+.site-header.is-open {
+  background: var(--color-surface);
+  color: var(--color-ink);
+  border-bottom-color: transparent;
+}
+.site-header.is-open .site-header__logo { color: var(--color-ink); }
+.site-header.is-open .site-header__link { color: var(--color-ink-secondary); }
+/* 보고 있는 메뉴만 강조색. :hover가 아니라 JS가 붙이는 .is-active로 잡는 건,
+   마우스가 패널로 내려간 뒤에도 어느 메뉴를 여는 중인지 남아야 하기 때문이다.
+   흰 바 위에서는 --color-primary-on-dark(#7ca5ff)가 2.6:1로 읽히지 않으므로,
+   같은 역할의 밝은 배경용 짝인 --color-primary를 쓴다. */
+.site-header.is-open .site-header__link.is-active {
+  color: var(--color-primary);
+  font-weight: 600;
+}
+.site-header.is-open .site-header__icon-btn { color: var(--color-ink-secondary); }
+@media (hover: hover) {
+  .site-header.is-open .site-header__link:hover { color: var(--color-primary); }
+  .site-header.is-open .site-header__icon-btn:hover { background: var(--color-canvas-soft); }
+}
+/* 흰 바 위에서는 버튼 두 종의 뜻이 뒤집힌다.
+   btn--invert(흰 채움)는 사라지고, btn--ghost-dark(흰 외곽선)도 마찬가지다. */
+.site-header.is-open .btn--invert {
+  --btn-bg: var(--color-primary); --btn-fg: var(--color-on-primary);
+}
+.site-header.is-open .btn--ghost-dark {
+  --btn-fg: var(--color-primary);
+  --btn-bd: color-mix(in srgb, var(--color-primary) 55%, #ffffff);
+}
+.site-header.is-open .btn--ghost-dark::before { background: var(--color-primary-soft); }
+
+.site-header__mega {
+  position: absolute; inset: 100% 0 auto 0;
+  background: var(--color-surface);
+  border-bottom: 1px solid var(--color-hairline);
+  box-shadow: var(--shadow-1);
+}
+.site-header__mega[hidden] { display: none; }
+.site-header__sub { display: none; padding-block: var(--space-lg) var(--space-xxl); }
+.site-header__sub.is-active { display: block; }
+.site-header__sub-title {
+  font-size: var(--fs-eyebrow); font-weight: 700; letter-spacing: 0.14em;
+  text-transform: uppercase; color: var(--color-ink-muted);
+  margin-bottom: var(--space-md);
+}
+.site-header__sub-grid {
+  display: grid; grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: var(--space-xs) var(--space-lg);
+}
+.site-header__sub-link {
+  display: grid; gap: 2px; align-content: start;
+  padding: var(--space-sm) var(--space-sm) var(--space-sm) 0;
+  border-radius: var(--radius-md);
+  transition: color var(--dur-fast) var(--ease-out);
+}
+.site-header__sub-label { font-size: var(--fs-body-sm); font-weight: 600; color: var(--color-ink); }
+.site-header__sub-note { font-size: var(--fs-caption); color: var(--color-ink-muted); }
+@media (hover: hover) {
+  .site-header__sub-link:hover .site-header__sub-label { color: var(--color-primary); }
+}
+@media (prefers-reduced-motion: reduce) { .site-header { transition: none; } }
+
+@media (max-width: 1024px) {
+  .site-header__nav, .site-header__actions .btn { display: none; }
+  .site-header__burger { display: grid; }
+  /* 주 메뉴가 사라지면 여는 방법도 사라진다. 패널은 드로어가 대신한다. */
+  .site-header__mega { display: none; }
+}
+
+/* 모바일 드로어 */
+.drawer {
+  position: fixed; inset: 0; z-index: var(--z-drawer);
+  background: var(--color-surface-dark); color: var(--color-on-primary);
+  padding: var(--space-lg);
+  transform: translateX(100%); transition: transform var(--dur-base) var(--ease-out);
+  overflow-y: auto;
+}
+.drawer.is-open { transform: translateX(0); }
+.drawer__head { display: flex; justify-content: space-between; align-items: center; height: var(--header-height); }
+.drawer__nav { display: grid; gap: var(--space-xs); margin-top: var(--space-lg); }
+.drawer__group { border-bottom: 1px solid var(--color-hairline-on-dark); padding-bottom: var(--space-sm); }
+.drawer__link { display: block; padding: var(--space-sm) 0; font-size: var(--fs-heading-3); font-weight: 700; }
+/* 데스크톱 메가 메뉴의 하위 항목은 모바일에서 부모 아래 목록으로 내려온다. */
+.drawer__sub { display: grid; gap: 2px; padding-bottom: var(--space-xs); }
+.drawer__sub-link { display: block; padding: 6px 0; font-size: var(--fs-body-sm); color: var(--color-body-muted); }
+@media (hover: hover) { .drawer__sub-link:hover { color: var(--color-on-primary); } }
+.drawer__actions { display: grid; gap: var(--space-sm); margin-top: var(--space-xxl); }
+@media (prefers-reduced-motion: reduce) { .drawer { transition: none; } }
+
+/* ==========================================================================
+   banner-hero — 흰 바탕 위 컨테이너 안에 놓이는 둥근 블록.
+   페이지의 유일한 캐러셀.
+   ========================================================================== */
+.hero { padding-block: var(--space-lg) 0; }
+.hero__frame {
+  position: relative;
+  min-height: var(--banner-hero-height);
+  border-radius: var(--radius-xl);
+  overflow: hidden;
+  /* 삭제한 프로모 스트립이 쓰던 그라데이션을 히어로가 물려받았다. */
+  background: var(--gradient-brand);
+  isolation: isolate;
+  /* 모든 슬라이드를 같은 그리드 셀에 겹쳐 둔다. 그래야 배너 높이가 고정되고,
+     제목이 길어도 블록 크기가 변하지 않고 줄바꿈만 된다. */
+  display: grid;
+  grid-template-areas: "slide";
+}
+/* 가로로 미끄러지는 전환. 비활성 슬라이드는 오른쪽에서 대기하고,
+   빠져나가는 슬라이드는 왼쪽으로 밀려난다. */
+.hero__slide {
+  grid-area: slide;
+  position: relative;
+  display: flex; align-items: center;
+  min-height: var(--banner-hero-height);
+  padding: var(--space-xxl);
+  opacity: 0;
+  transform: translate3d(28%, 0, 0);
+  pointer-events: none;
+  transition: opacity var(--dur-slow) var(--ease-out),
+              transform var(--dur-slow) var(--ease-out);
+}
+.hero__slide.is-active {
+  opacity: 1;
+  transform: translate3d(0, 0, 0);
+  pointer-events: auto;
+  z-index: 2;
+}
+.hero__slide.is-prev {
+  opacity: 0;
+  transform: translate3d(-28%, 0, 0);
+  z-index: 1;
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero__slide { transition: opacity var(--dur-base) linear; transform: none !important; }
+}
+.hero__bg { position: absolute; inset: 0; z-index: 0; }
+.hero__bg img { width: 100%; height: 100%; object-fit: cover; }
+/* 스크림은 필수. 제목 가독성이 업로드된 사진에 좌우되면 안 된다.
+   1층: 좌→우 가독성 확보, 2층: 사진 위에도 브랜드 그라데이션이 비치도록. */
+.hero__scrim {
+  position: absolute; inset: 0; z-index: 1;
+  background:
+    linear-gradient(90deg,
+      var(--color-surface-dark) 0%,
+      color-mix(in srgb, var(--color-surface-dark) 88%, transparent) 42%,
+      color-mix(in srgb, var(--color-surface-dark) 20%, transparent) 78%,
+      transparent 100%),
+    linear-gradient(115deg,
+      color-mix(in srgb, var(--color-surface-dark) 45%, transparent) 0%,
+      color-mix(in srgb, var(--color-secondary) 38%, transparent) 100%);
+}
+.hero__body { position: relative; z-index: 2; max-width: 620px; display: grid; gap: var(--space-md); }
+.hero__eyebrow { color: var(--color-secondary-on-dark); }
+.hero__title { color: var(--color-on-primary); }
+.hero__desc { color: var(--color-body-muted); max-width: 52ch; }
+.hero__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-top: var(--space-xs); }
+
+.hero__dots {
+  position: absolute; left: var(--space-xxl); bottom: var(--space-lg); z-index: 3;
+  display: flex; gap: var(--space-xs);
+}
+.hero__dot {
+  width: 8px; height: 8px; border-radius: var(--radius-full);
+  background: rgba(255, 255, 255, 0.35);
+  transition: width var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out);
+}
+.hero__dot.is-active { width: 26px; background: var(--color-on-primary); }
+.hero__nav {
+  position: absolute; right: var(--space-xxl); bottom: var(--space-lg); z-index: 3;
+  display: flex; gap: var(--space-xs);
+}
+.hero__arrow {
+  width: 38px; height: 38px; border-radius: var(--radius-full);
+  display: grid; place-items: center;
+  background: rgba(255, 255, 255, 0.12); color: var(--color-on-primary);
+  transition: background-color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) { .hero__arrow:hover { background: rgba(255, 255, 255, 0.24); } }
+
+@media (max-width: 600px) {
+  .hero__frame, .hero__slide { min-height: 0; }
+  .hero__slide { padding: var(--space-lg) var(--space-md) 64px; }
+  .hero__scrim { background: linear-gradient(180deg,
+      color-mix(in srgb, var(--color-surface-dark) 55%, transparent) 0%,
+      var(--color-surface-dark) 62%); }
+  .hero__dots { left: var(--space-md); bottom: var(--space-md); }
+  .hero__nav { display: none; }
+}
+
+/* banner-strip은 제거되었다. 히어로 바로 아래 작은 컴포넌트를 없애고
+   그 그라데이션은 --gradient-brand로 옮겨 히어로가 사용한다. */
+
+/* ==========================================================================
+   인사이트 / 구축사례 — 공용 에디토리얼 패턴.
+   텍스트가 주가 되고 이미지는 보조. 카드뉴스식 타일은 쓰지 않는다.
+   ========================================================================== */
+.insight-featured { display: grid; gap: var(--space-md); }
+.insight-featured .media { border-radius: var(--radius-lg); }
+.insight-featured__meta { display: flex; align-items: center; gap: var(--space-sm); }
+.insight-featured__title { margin-top: var(--space-xxs); }
+.insight-featured__excerpt { color: var(--color-ink-secondary); max-width: 62ch; }
+
+.insight-rail { display: grid; gap: 0; align-content: start; }
+.insight-rail__head {
+  display: flex; justify-content: space-between; align-items: baseline;
+  padding-bottom: var(--space-sm); border-bottom: 2px solid var(--color-ink);
+}
+
+/* insight-list-row — 텍스트 행. 썸네일은 장식이라 없어도 된다. */
+.insight-row {
+  display: grid; grid-template-columns: 72px 1fr; gap: var(--space-sm);
+  padding: var(--space-md) 0;
+  border-bottom: 1px solid var(--color-hairline);
+  align-items: start;
+}
+.insight-row--no-thumb { grid-template-columns: 1fr; }
+.insight-row .media { border-radius: var(--radius-md); }
+.insight-row__title { font-weight: 600; }
+.insight-row__meta { color: var(--color-ink-muted); }
+@media (hover: hover) {
+  .insight-row:hover .insight-row__title { text-decoration: underline; }
+  .insight-row:hover .media > img { transform: scale(1.06); }
+}
+
+/* subscribe-card — 목록 끝을 마무리하는 파란 전환 유도 카드. */
+.subscribe-card {
+  margin-top: var(--space-lg);
+  background: var(--color-primary); color: var(--color-on-primary);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  display: grid; gap: var(--space-sm);
+}
+.subscribe-card__desc { color: rgba(255, 255, 255, 0.85); }
+
+/* insight-card — 3열 그리드. 높이는 늘려서가 아니라 줄 수를 잘라서 맞춘다. */
+.insight-grid { margin-top: var(--space-xxl); }
+.insight-card {
+  display: grid; gap: var(--space-sm);
+  background: var(--color-surface);
+  border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg);
+  padding: var(--space-md);
+  align-content: start;
+  transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out), transform var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) {
+  .insight-card:hover { border-color: var(--color-ink-muted); box-shadow: var(--shadow-1); transform: translateY(-2px); }
+  .insight-card:hover .media > img { transform: scale(1.05); }
+}
+.insight-card__excerpt { color: var(--color-ink-muted); }
+.insight-section__foot { margin-top: var(--space-xxl); display: flex; justify-content: center; }
+
+/* ==========================================================================
+   feature-banner — 세로로 쌓는 프로모 배너. 캐러셀이 아니다.
+   제목은 의도적으로 크고 굵게, 보조 문구는 작은 본문으로.
+   ========================================================================== */
+.feature-list { display: grid; gap: var(--space-lg); }
+.feature-banner {
+  position: relative; overflow: hidden;
+  border-radius: var(--radius-xl);
+  background: var(--color-surface-dark);
+  color: var(--color-on-primary);
+  padding: clamp(28px, 5vw, 56px);
+  display: flex; align-items: center; justify-content: space-between; gap: var(--space-xl);
+  isolation: isolate;
+}
+/* 강조 글로우 — 바이올렛/블루는 네이비 블록 안의 강조일 뿐 밴드가 아니다. */
+.feature-banner::after {
+  content: ''; position: absolute; z-index: -1;
+  width: 520px; height: 520px; border-radius: 50%;
+  right: -140px; top: -220px;
+  background: radial-gradient(circle, color-mix(in srgb, var(--accent, var(--color-primary)) 55%, transparent) 0%, transparent 68%);
+  pointer-events: none;
+}
+.feature-banner--violet { --accent: var(--color-secondary); }
+.feature-banner--blue   { --accent: var(--color-primary); }
+.feature-banner--reverse { flex-direction: row-reverse; }
+.feature-banner--reverse::after { right: auto; left: -140px; }
+
+.feature-banner__body { display: grid; gap: var(--space-sm); max-width: 60ch; }
+.feature-banner__eyebrow { color: var(--color-secondary-on-dark); }
+/* 요청받은 강약 보정: 제목은 크고 굵게 … */
+.feature-banner__title { color: var(--color-on-primary); }
+/* … 그 아래 본문은 작게. */
+.feature-banner__desc { color: var(--color-body-muted); max-width: 54ch; }
+.feature-banner__action { flex-shrink: 0; }
+
+@media (max-width: 768px) {
+  .feature-banner, .feature-banner--reverse { flex-direction: column; align-items: flex-start; }
+}
+
+/* ==========================================================================
+   card-on-dark — 투명 배경 + 반투명 흰 테두리.
+   네이비 위에서는 그림자가 보이지 않으므로 테두리로 구분한다.
+   ========================================================================== */
+.dark-card {
+  background: transparent;
+  border: 1px solid var(--color-hairline-on-dark);
+  border-radius: var(--radius-lg);
+  padding: var(--space-lg);
+  display: grid; gap: var(--space-md); align-content: start;
+  transition: border-color var(--dur-base) var(--ease-out), background-color var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) { .dark-card:hover { border-color: rgba(255,255,255,0.3); background: rgba(255,255,255,0.04); } }
+.dark-card__title { color: var(--color-on-primary); }
+.dark-card__list { display: grid; gap: var(--space-xs); }
+.dark-card__item {
+  color: var(--color-body-muted); font-size: var(--fs-body-sm); line-height: var(--lh-body-sm);
+  padding-left: 16px; position: relative;
+}
+.dark-card__item::before {
+  content: ''; position: absolute; left: 0; top: 0.6em;
+  width: 5px; height: 5px; border-radius: 50%; background: var(--color-primary-on-dark);
+}
+
+/* ==========================================================================
+   icon-tile — 블루/바이올렛만 사용. 항목 구분은 아이콘과 문구로 한다.
+   ========================================================================== */
+.challenge {
+  display: grid; grid-template-columns: 48px 1fr; gap: var(--space-md);
+  padding: var(--space-lg);
+  border: 1px solid var(--color-hairline); border-radius: var(--radius-lg);
+  background: var(--color-surface); align-items: start;
+  transition: border-color var(--dur-base) var(--ease-out), box-shadow var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) { .challenge:hover { border-color: var(--color-ink-muted); box-shadow: var(--shadow-1); } }
+.icon-tile {
+  width: 48px; height: 48px; border-radius: var(--radius-md);
+  display: grid; place-items: center;
+  background: var(--color-primary); color: var(--color-on-primary);
+}
+.icon-tile--alt { background: var(--color-secondary); }
+.challenge__desc { color: var(--color-ink-muted); }
+
+/* ==========================================================================
+   logo-cell — 흐르는 배너가 아닌 정적 그리드. 칸 크기와 로고 크기를 통일.
+   ========================================================================== */
+.logo-cell {
+  border: 1px solid var(--color-hairline); border-radius: var(--radius-md);
+  background: var(--color-surface);
+  padding: var(--space-lg);
+  display: grid; gap: var(--space-xs); place-items: center; text-align: center;
+  min-height: 116px; align-content: center;
+  transition: border-color var(--dur-base) var(--ease-out);
+}
+@media (hover: hover) { .logo-cell:hover { border-color: var(--color-ink-muted); } }
+.logo-cell__mark { max-height: 32px; width: auto; object-fit: contain; }
+.logo-cell__name { font-weight: 600; }
+.logo-cell__note { color: var(--color-ink-muted); }
+
+/* ==========================================================================
+   stat-card — 모든 수치에 출처를 함께 표기한다.
+   ========================================================================== */
+.stat-card {
+  background: var(--color-surface); border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-lg); padding: var(--space-lg);
+  display: grid; gap: var(--space-md); align-content: start;
+}
+.stat-card__label { display: flex; align-items: center; gap: var(--space-xs); font-weight: 700; }
+.stat-card__figures { display: flex; gap: var(--space-lg); flex-wrap: wrap; }
+.stat-card__figure { display: grid; gap: 2px; }
+.stat-card__value { color: var(--color-primary); }
+.stat-card__caption { color: var(--color-ink-muted); }
+.stat-card__desc { color: var(--color-ink-secondary); font-size: var(--fs-caption); line-height: var(--lh-caption); }
+.stat-card__source { color: var(--color-ink-muted); border-top: 1px solid var(--color-hairline); padding-top: var(--space-sm); }
+
+/* ==========================================================================
+   CTA 밴드
+   ========================================================================== */
+.cta-primary__inner { display: grid; grid-template-columns: 5fr 7fr; gap: var(--space-xxl); align-items: center; }
+.cta-primary__media { border-radius: var(--radius-lg); overflow: hidden; background: rgba(255,255,255,0.1); aspect-ratio: 16/10; }
+.cta-primary__media img { width: 100%; height: 100%; object-fit: cover; }
+.cta-primary__body { display: grid; gap: var(--space-md); }
+.cta-primary__desc { color: rgba(255, 255, 255, 0.88); max-width: 56ch; }
+.cta-primary__actions { display: flex; gap: var(--space-sm); flex-wrap: wrap; margin-top: var(--space-xs); }
+@media (max-width: 900px) { .cta-primary__inner { grid-template-columns: 1fr; } }
+
+/* 마무리 CTA — 구조만 정의하고 색은 밴드에서 상속받는다.
+   다크 배경 위에 올릴 일이 생기면 `.band--dark .cta-closing__*` 배리언트를
+   따로 얹는다. 클래스 이름은 색을 말하지 않는다. */
+.cta-closing__inner { display: grid; gap: var(--space-lg); justify-items: center; text-align: center; }
+.cta-closing__title { max-width: 20ch; }
+.cta-closing__desc { max-width: 56ch; }
+
+/* ==========================================================================
+   site-footer — 네이비 배경, 컨테이너 안, 회사 법적 고지 블록 포함.
+   ========================================================================== */
+.site-footer { background: var(--color-surface-dark); color: var(--color-body-muted); padding-block: var(--space-xxl); }
+.site-footer__top { display: grid; grid-template-columns: 2fr 3fr; gap: var(--space-xxl); padding-bottom: var(--space-xxl); }
+.site-footer__brand { display: grid; gap: var(--space-sm); align-content: start; }
+.site-footer__logo { color: var(--color-on-primary); font-weight: 800; font-size: 17px; letter-spacing: -0.02em; }
+.site-footer__dirs { display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-lg); }
+.site-footer__coltitle { color: var(--color-on-primary); font-weight: 600; margin-bottom: var(--space-sm); }
+.site-footer__link { display: block; padding-block: 5px; font-size: var(--fs-caption); }
+@media (hover: hover) { .site-footer__link:hover { color: var(--color-on-primary); } }
+.site-footer__legal { border-top: 1px solid var(--color-hairline-on-dark); padding-top: var(--space-lg); display: grid; gap: var(--space-xs); }
+.site-footer__legal-row { display: flex; flex-wrap: wrap; gap: 4px var(--space-md); }
+/* 개인정보처리방침은 작은 글씨가 아니라 필수 링크다. */
+.site-footer__policy { color: var(--color-on-primary); font-weight: 600; }
+.site-footer__copy { color: var(--color-ink-muted); margin-top: var(--space-xs); }
+@media (max-width: 900px) {
+  .site-footer__top { grid-template-columns: 1fr; gap: var(--space-xl); }
+  .site-footer__dirs { grid-template-columns: repeat(2, 1fr); }
+}
+
+/* ==========================================================================
+   float-rail — 자체 흰색 칩을 둘러 어떤 밴드 위에서도 잘 보이게 한다.
+   ========================================================================== */
+.float-rail {
+  position: fixed; right: var(--space-md); top: 50%; transform: translateY(-50%);
+  z-index: var(--z-rail);
+  display: grid; gap: 2px; padding: var(--space-xxs);
+  background: var(--color-surface); border: 1px solid var(--color-hairline);
+  border-radius: var(--radius-md); box-shadow: var(--shadow-1);
+}
+.float-rail__btn {
+  width: 40px; height: 40px; display: grid; place-items: center;
+  border-radius: var(--radius-sm); color: var(--color-ink-secondary);
+  font-size: 11px; font-weight: 600; text-align: center; line-height: 1.1;
+  transition: background-color var(--dur-fast) var(--ease-out), color var(--dur-fast) var(--ease-out);
+}
+@media (hover: hover) { .float-rail__btn:hover { background: var(--color-canvas-soft); color: var(--color-ink); } }
+.float-rail__btn--accent { background: var(--color-primary); color: var(--color-on-primary); }
+@media (hover: hover) { .float-rail__btn--accent:hover { background: var(--color-primary-active); color: var(--color-on-primary); } }
+.float-rail__btn[hidden] { display: none; }
+@media (max-width: 768px) {
+  .float-rail { top: auto; bottom: var(--space-md); transform: none; grid-auto-flow: column; }
+  .float-rail__btn--collapsible { display: none; }
+}
+
+/* ==========================================================================
+   알림 — 성공/경고는 채운 배경에 검은 글자, 오류는 채운 배경에 흰 글자.
+   앞에 아이콘을 붙인다. 색약 사용자에게는 배경색이 아니라 아이콘이 단서다.
+   ========================================================================== */
+.alert {
+  display: flex; gap: var(--space-sm); align-items: flex-start;
+  border-radius: var(--radius-md); padding: var(--space-sm) var(--space-md);
+  font-size: var(--fs-body-sm); line-height: var(--lh-body-sm);
+}
+.alert--success { background: var(--color-success); color: var(--color-ink); }
+.alert--warning { background: var(--color-warning); color: var(--color-ink); }
+.alert--error   { background: var(--color-error);   color: var(--color-on-primary); }

@@ -1,0 +1,95 @@
+/* Hallmark · design-system: DESIGN.md · role: layout */
+/* ============================================================================
+   layout.css — DESIGN.md > Layout.
+
+   핵심 규칙: 화면 전체 폭을 쓰는 것은 배경뿐이고, 내용은 절대 아니다.
+   `.band`가 좌우 끝까지 배경을 칠하고, `.container`가 모든 자식을
+   --container-max 안에 가둔다. 히어로를 포함해 예외는 없다.
+   ========================================================================== */
+
+.container {
+  width: 100%;
+  max-width: var(--container-max);
+  margin-inline: auto;
+  padding-inline: var(--container-gutter);
+}
+
+/* ---- 밴드 -----------------------------------------------------------------
+   페이지는 밴드를 쌓은 구조다. 밴드 하나당 배경면 하나만 선언한다.         */
+.band { position: relative; }
+.band--pad     { padding-block: var(--section-py); }
+.band--pad-sm  { padding-block: var(--section-py-compact); }
+
+.band--light   { background: var(--color-canvas); color: var(--color-ink); }
+.band--soft    { background: var(--color-canvas-soft); color: var(--color-ink); }
+.band--dark    { background: var(--color-surface-dark); color: var(--color-on-primary); }
+/* 전환용 강조 밴드.
+   목업 1a는 리포트 CTA를 primary(#001c88)로 칠하고, 바로 다음 마무리 밴드를
+   흰색으로 두어 네이비 푸터와 떨어뜨린다. 그래서 남색 밴드가 네이비 밴드와
+   맞닿지 않고, 1.28:1 문제가 발생하지 않는다.
+   .band--accent(보라)는 남색 밴드가 네이비와 인접해야 하는 배치에서만 쓴다. */
+.band--primary { background: var(--color-primary); color: var(--color-on-primary); }
+.band--accent  { background: var(--color-secondary); color: var(--color-on-primary); }
+
+/* ---- 섹션 제목 ------------------------------------------------------------
+   가운데 정렬 제목 + 보조 문장 한 줄. 페이지의 좌우 대칭 중심축이다.       */
+.section-head {
+  text-align: center;
+  margin-bottom: var(--space-xxl);
+  display: grid;
+  gap: var(--space-sm);
+  justify-items: center;
+}
+.section-head__title { max-width: 22ch; }
+.section-head__sub { max-width: 60ch; color: var(--color-ink-muted); }
+.band--dark .section-head__sub { color: var(--color-body-muted); }
+
+@media (min-width: 601px) {
+  .section-head { margin-bottom: calc(var(--space-xxl) + var(--space-md)); }
+}
+
+/* ---- 그리드 ---------------------------------------------------------------
+   DESIGN.md > Layout > Grid에 정의된 반복 배치 4종.                        */
+.grid { display: grid; gap: var(--grid-gap); }
+
+/* 에디토리얼 분할 7:5. 왼쪽에 대표 항목, 오른쪽에 목록. */
+.grid--editorial { grid-template-columns: 7fr 5fr; align-items: start; }
+
+.grid--2 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.grid--3 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+.grid--4 { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+
+@media (max-width: 1024px) {
+  .grid--editorial { grid-template-columns: 1fr; }
+  .grid--4 { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .grid--3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+@media (max-width: 600px) {
+  .grid--2, .grid--3 { grid-template-columns: 1fr; }
+  .grid--4 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+/* ---- 미디어 프레임 --------------------------------------------------------
+   비율 고정 박스. DB 이미지가 들어와도 레이아웃이 밀리지 않는다.           */
+.media {
+  position: relative;
+  width: 100%;
+  overflow: hidden;
+  border-radius: var(--radius-lg);
+  background: var(--color-canvas-soft);
+  border: 1px solid var(--color-hairline);
+}
+.media--16x9 { aspect-ratio: 16 / 9; }
+.media--4x3  { aspect-ratio: 4 / 3; }
+.media--1x1  { aspect-ratio: 1 / 1; }
+.media > img {
+  width: 100%; height: 100%;
+  object-fit: cover;
+  transition: transform var(--dur-slow) var(--ease-out);
+}
+.band--dark .media { border-color: var(--color-hairline-on-dark); background: rgba(255,255,255,0.04); }
+
+.stack   { display: grid; gap: var(--space-md); }
+.stack-sm{ display: grid; gap: var(--space-xs); }
+.row     { display: flex; align-items: center; gap: var(--space-sm); flex-wrap: wrap; }
+.row--between { display: flex; align-items: center; justify-content: space-between; gap: var(--space-md); flex-wrap: wrap; }
